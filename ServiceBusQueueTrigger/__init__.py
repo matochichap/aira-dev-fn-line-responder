@@ -48,3 +48,5 @@ def format_message(msg):
     #     "message_data": msg_json.get("message", {}).get("data")
     # }
     # return formatted_json
+
+# test
