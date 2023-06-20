@@ -7,6 +7,7 @@ from linebot.exceptions import LineBotApiError
 from message_templates import *
 
 CHANNEL_ACCESS_TOKEN = os.environ.get("channel_access_token")
+CHANNEL_ACCESS_TOKEN = "GY1QvexN77bi6Md7bRT7Qb6kaE54HS99NJfD1wK1a0JxL26qIXt/E58UvJh6l5jTGc/TW3UJB7MmtbpRiU8GmrQEJzL5rFs7uafVyx0WC6l0SLh6BecuNdHZL6maqLguIevY4JCaMRhV+BtCMMuGCAdB04t89/1O/w1cDnyilFU="
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 
 
