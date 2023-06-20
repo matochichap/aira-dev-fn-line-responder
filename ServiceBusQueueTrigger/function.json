@@ -8,9 +8,7 @@
       "topicName": "linereplymessages",
       "subscriptionName": "lineresponder",
       "connection": "ServiceBusConnection",
-      "isSessionsEnabled": true,
-
-      "queueName": "linebotreplies"
+      "isSessionsEnabled": true
     }
   ]
 }
