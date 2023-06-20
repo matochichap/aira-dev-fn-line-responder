@@ -1,0 +1,16 @@
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "msg",
+      "type": "serviceBusTrigger",
+      "direction": "in",
+      "topicName": "linereplymessages",
+      "subscriptionName": "lineresponder",
+      "connection": "ServiceBusConnection",
+      "isSessionsEnabled": true,
+
+      "queueName": "linebotreplies"
+    }
+  ]
+}
