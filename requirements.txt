@@ -3,4 +3,4 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
-line-bot-sdk
+line-bot-sdk==2.4.2
