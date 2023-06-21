@@ -51,8 +51,15 @@ def format_message(msg):
 
 
 def format_text(text):
-    messages = text.split("\n")
+    messages = text.split("##")
     formatted_messages = []
+    if len(messages) > 5:
+        s = "\n".join(messages[4:])
+        messages = messages[:4]
+        messages.append(s)
     for message in messages:
-        formatted_messages.append(TextMessage(text=message))
+        if message != " ":
+            formatted_messages.append(TextMessage(text=message))
+    logging.info(formatted_messages)
+
     return formatted_messages
