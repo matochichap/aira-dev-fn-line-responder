@@ -80,7 +80,7 @@ def create_menu(menu_items):
 def create_job_listings(job_listings):
     # job_listings = data["job_listings"]
     """
-    job: job_title, company, location, salary_range, color, img_url
+    job: job_title, company, location, salary_range, color, img_url, job_details_url, job_id
     """
     bubbles = []
     for job in job_listings:
@@ -147,8 +147,8 @@ def create_job_listings(job_listings):
                                         border_color="#ffffff",
                                         corner_radius="4px",
                                         action=URIAction(
-                                            label="action",
-                                            uri="https://example.com"
+                                            label="Explore",
+                                            uri=job["job_details_url"]
                                         ),
                                         contents=[
                                             FillerComponent(),
@@ -181,9 +181,9 @@ def create_job_listings(job_listings):
                                         border_width="1px",
                                         border_color="#ffffff",
                                         corner_radius="4px",
-                                        action=URIAction(
-                                            label="action",
-                                            uri="https://example.com"
+                                        action=PostbackAction(
+                                            label="chat",
+                                            data=job["job_id"]
                                         ),
                                         contents=[
                                             FillerComponent(),
@@ -513,3 +513,137 @@ def create_job_applications(job_applications):
     carousel = CarouselContainer(contents=bubbles)
 
     return FlexSendMessage(alt_text="Job Applications", contents=carousel)
+
+
+def create_job_listings_v2(job_listings):
+    """
+    job: job_title, company, location, salary_range, color, job_details_url, job_id
+    """
+    bubbles = []
+    for job in job_listings:
+        bubble = BubbleContainer(
+            body=BoxComponent(
+                layout="vertical",
+                width="300px",
+                height="140px",
+                background_color=job["color"],
+                padding_all="0px",
+                contents=[
+                    BoxComponent(
+                        layout="vertical",
+                        position="absolute",
+                        height="130px",
+                        background_color="#343436",
+                        offset_bottom="0px",
+                        offset_start="0px",
+                        offset_end="0px",
+                        padding_all="20px",
+                        padding_top="10px",
+                        contents=[
+                            BoxComponent(
+                                layout="vertical",
+                                margin="sm",
+                                padding_start="lg",
+                                contents=[
+                                    TextComponent(
+                                        text=job["job_title"],
+                                        size="xl",
+                                        color="#ffffff",
+                                        weight="bold",
+                                    )
+                                ]
+                            ),
+                            BoxComponent(
+                                layout="baseline",
+                                spacing="lg",
+                                margin="sm",
+                                padding_start="lg",
+                                contents=[
+                                    TextComponent(
+                                        text=f"{job['company']} {job['location']} | {job['salary_range']}",
+                                        size="sm",
+                                        color="#ebebeb"
+                                    )
+                                ]
+                            ),
+                            BoxComponent(
+                                layout="horizontal",
+                                margin="md",
+                                contents=[
+                                    FillerComponent(flex=1),
+                                    BoxComponent(
+                                        layout="vertical",
+                                        flex=7,
+                                        spacing="sm",
+                                        height="40px",
+                                        border_width="1px",
+                                        border_color="#ffffff",
+                                        corner_radius="4px",
+                                        action=URIAction(
+                                            label="explore",
+                                            uri=job["job_details_url"]
+                                        ),
+                                        contents=[
+                                            FillerComponent(),
+                                            BoxComponent(
+                                                layout="baseline",
+                                                spacing="sm",
+                                                contents=[
+                                                    FillerComponent(),
+                                                    TextComponent(
+                                                        text="Explore",
+                                                        flex=0,
+                                                        size="sm",
+                                                        color="#ffffff",
+                                                        offset_top="-2px"
+                                                    ),
+                                                    FillerComponent()
+                                                ]
+                                            ),
+                                            FillerComponent()
+                                        ]
+                                    ),
+                                    FillerComponent(flex=2),
+                                    BoxComponent(
+                                        layout="vertical",
+                                        flex=7,
+                                        spacing="sm",
+                                        height="40px",
+                                        border_width="1px",
+                                        border_color="#ffffff",
+                                        corner_radius="4px",
+                                        action=PostbackAction(
+                                            label="chat",
+                                            data=job["job_id"]
+                                        ),
+                                        contents=[
+                                            FillerComponent(),
+                                            BoxComponent(
+                                                layout="baseline",
+                                                spacing="sm",
+                                                contents=[
+                                                    FillerComponent(),
+                                                    TextComponent(
+                                                        text="Chat",
+                                                        flex=0,
+                                                        size="sm",
+                                                        color="#ffffff",
+                                                        offset_top="-2px"
+                                                    ),
+                                                    FillerComponent()
+                                                ]
+                                            ),
+                                            FillerComponent()
+                                        ]
+                                    ),
+                                    FillerComponent(flex=1)
+                                ]
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+        bubbles.append(bubble)
+    carousel = CarouselContainer(contents=bubbles)
+    return FlexSendMessage(alt_text="Job Listings", contents=carousel)
