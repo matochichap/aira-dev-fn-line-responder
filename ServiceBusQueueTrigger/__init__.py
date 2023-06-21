@@ -14,10 +14,10 @@ def main(msg: func.ServiceBusMessage):
     formatted_msg = format_message(msg)
     logging.info(formatted_msg)
     try:
-        line_bot_api.reply_message(formatted_msg["replyToken"], TextMessage(text=formatted_msg["text"]))
+        line_bot_api.reply_message(formatted_msg["replyToken"], format_text(formatted_msg["text"]))
     except LineBotApiError:
         logging.info("LineBotApiError")
-        line_bot_api.push_message(formatted_msg['userId'], TextMessage(text=formatted_msg["text"]))
+        line_bot_api.push_message(formatted_msg['userId'], format_text(formatted_msg["text"]))
     return
 
     # user_id = formatted_msg["user_id"]
@@ -48,3 +48,11 @@ def format_message(msg):
     #     "message_data": msg_json.get("message", {}).get("data")
     # }
     # return formatted_json
+
+
+def format_text(text):
+    messages = text.split("\n")
+    formatted_messages = []
+    for message in messages:
+        formatted_messages.append(TextMessage(text=message))
+    return formatted_messages
