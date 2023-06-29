@@ -9,7 +9,6 @@ from linebot.exceptions import LineBotApiError
 from message_templates import *
 
 KEY_VAULT_NAME = os.environ.get("KEY_VAULT_NAME")
-# KEY_VAULT_NAME = "aira-dev-kv"  # set as environ when deploying
 
 
 def main(msg: func.ServiceBusMessage):
