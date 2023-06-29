@@ -13,7 +13,7 @@ KEY_VAULT_NAME = os.environ.get("KEY_VAULT_NAME")
 
 def main(msg: func.ServiceBusMessage):
     formatted_msg = format_message(msg)
-    logging.info(formatted_msg)
+    logging.info(formatted_msg)  # print formatted message
     channel_access_token = get_channel_access_token(f"token{formatted_msg['channelid']}")
     line_bot_api = LineBotApi(channel_access_token)
     try:
@@ -59,17 +59,19 @@ def format_message(msg):
 
 
 def format_text(text):
-    messages = text.split("##")
+    messages = text.split("\\n")  # set which character to split by
     formatted_messages = []
+    # append back of messages together if exceed 5 messages
     if len(messages) > 5:
         s = "\n".join(messages[4:])
         messages = messages[:4]
         messages.append(s)
+    # create messages
     for message in messages:
-        if message != " ":
+        # check if message is "" or " "
+        if message != " " and message:
             formatted_messages.append(TextMessage(text=message))
     logging.info(formatted_messages)
-
     return formatted_messages
 
 
