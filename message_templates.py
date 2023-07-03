@@ -517,7 +517,7 @@ def create_job_applications(job_applications):
 
 def create_job_listings_v2(job_listings):
     """
-    job: job_title, company, location, salary_range, color, job_details_url, job_id
+    job: job_title, company, location, color, job_details_url, job_id
     """
     bubbles = []
     for job in job_listings:
@@ -547,9 +547,10 @@ def create_job_listings_v2(job_listings):
                                 contents=[
                                     TextComponent(
                                         text=job["job_title"],
-                                        size="xl",
+                                        size="sm",
                                         color="#ffffff",
                                         weight="bold",
+                                        wrap=True
                                     )
                                 ]
                             ),
@@ -560,9 +561,10 @@ def create_job_listings_v2(job_listings):
                                 padding_start="lg",
                                 contents=[
                                     TextComponent(
-                                        text=f"{job['company']} {job['location']} | {job['salary_range']}",
-                                        size="sm",
-                                        color="#ebebeb"
+                                        text=f"{job['company']} | {job['location']}",
+                                        size="xxs",
+                                        color="#ebebeb",
+                                        wrap=True
                                     )
                                 ]
                             ),
@@ -581,7 +583,8 @@ def create_job_listings_v2(job_listings):
                                         corner_radius="4px",
                                         action=URIAction(
                                             label="explore",
-                                            uri=job["job_details_url"]
+                                            uri=job["job_details_url"],
+                                            data="#"
                                         ),
                                         contents=[
                                             FillerComponent(),

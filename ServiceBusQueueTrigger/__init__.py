@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import requests
 import azure.functions as func
 from azure.keyvault.secrets import SecretClient
 from azure.identity import DefaultAzureCredential
@@ -8,70 +9,96 @@ from linebot import LineBotApi
 from linebot.exceptions import LineBotApiError
 from message_templates import *
 
+CAROUSEL_ITEMS_LIMIT = 12
 KEY_VAULT_NAME = os.environ.get("KEY_VAULT_NAME")
+JOB_DETAILS_ENDPOINT = os.environ.get("JOB_DETAILS_ENDPOINT")
+JOB_DETAILS_WEBPAGE = os.environ.get("JOB_DETAILS_WEBPAGE")
 
 
 def main(msg: func.ServiceBusMessage):
+    global message
     formatted_msg = format_message(msg)
-    logging.info(formatted_msg)  # print formatted message
-    channel_access_token = get_channel_access_token(f"token{formatted_msg['channelid']}")
+    logging.info(f"FORMATTED MESSAGE: {formatted_msg}")  # print formatted message
+    channel_access_token = get_channel_access_token(f"token{formatted_msg['channelId']}")
     line_bot_api = LineBotApi(channel_access_token)
+    # append text message to list
+    # set limit to 4 for all messages to safely append job listings to messages
+    message = format_text(formatted_msg["text"], 4)
+    # if searchId is present, add job listings message to the list
+    if formatted_msg["type"] == "job_listings":
+        message.append(create_job_listings_v2(formatted_msg["job_listings"]))
     try:
-        line_bot_api.reply_message(formatted_msg["replyToken"], format_text(formatted_msg["text"]))
+        line_bot_api.reply_message(formatted_msg["replyToken"], message)
     except LineBotApiError:
         logging.info("Reply token expired")
-        line_bot_api.push_message(formatted_msg['userId'], format_text(formatted_msg["text"]))
+        line_bot_api.push_message(formatted_msg['userId'], message)
     return
-
-    # send different messages based on type
-
-    # user_id = formatted_msg["user_id"]
-    # message_type = formatted_msg["message_type"]
-    # if message_type == "welcome":
-    #     message = TextMessage(text=formatted_msg["message_text"])
-    #     menu = create_menu(formatted_msg["message_data"])
-    #     line_bot_api.push_message(user_id, [message, menu])
-    # elif message_type == "job_listings":
-    #     job_listings = create_job_listings(formatted_msg["message_data"])
-    #     line_bot_api.push_message(user_id, job_listings)
-    # elif message_type == "job_applications":
-    #     job_applications = create_job_applications(formatted_msg["message_data"])
-    #     line_bot_api.push_message(user_id, job_applications)
-    # else:
-    #     message = TextMessage(text="Some other message type")
-    #     line_bot_api.push_message(user_id, message)
 
 
 def format_message(msg):
     msg_str = msg.get_body().decode('utf-8')
     msg_json = json.loads(msg_str)
-    return msg_json  # testing
+    formatted_json = {
+        "channelId": msg_json.get("channelid"),
+        "replyToken": msg_json.get("replyToken"),
+        "text": msg_json.get("text"),
+        "userId": msg_json.get("userId"),
+        "type": "text"
+    }
+    # if searchId not "" use endpoint to get job details
+    if msg_json["searchId"]:
+        formatted_json["type"] = "job_listings"
+        response = requests.get(f"{JOB_DETAILS_ENDPOINT}{msg_json['searchId']}")
+        if response.status_code == 200:
+            data = response.json()
+            # add new job_listings field to formatted json
+            formatted_json["job_listings"] = format_data(data, msg_json["searchId"])
+    # else return decoded json
+    return formatted_json
 
-    # format json to pass into message templates
 
-    # formatted_json = {
-    #     "user_id": msg_json.get("userId"),
-    #     "message_type": msg_json.get("message", {}).get("type"),
-    #     "message_text": msg_json.get("message", {}).get("text"),
-    #     "message_data": msg_json.get("message", {}).get("data")
-    # }
-    # return formatted_json
+# format data from endpoint
+def format_data(data, search_id):
+    # cycle through colors
+    colors = ["#CAD7F2", "#E0A4F4", "#F5C947", "#F2644C", "#7ACBF1", "#F5F4F5"]
+    color = 0
+    data = data["Data"]
+    formatted_data = []
+    for job in data[:CAROUSEL_ITEMS_LIMIT]:
+        # check if job_id exists to prevent passing in None
+        job_id = job.get("Details", {}).get("JobId")
+        if not job_id:
+            job_id = "No job id"
+        new_job = {
+            "job_title": job.get("Details", {}).get("Position", "No job title"),
+            "company": job.get("Company", {}).get("Company", "No company"),
+            "location": job.get("Details", {}).get("Location", "No location"),
+            "color": colors[color],
+            "job_details_url": f"{JOB_DETAILS_WEBPAGE}{search_id}",  # for testing
+            "job_id": job_id
+        }
+        color += 1
+        if color >= len(colors):
+            color = 0
+        formatted_data.append(new_job)
+    return formatted_data
 
 
-def format_text(text):
+def format_text(text, messages_limit):
     messages = text.split("\\n")  # set which character to split by
     formatted_messages = []
     # append back of messages together if exceed 5 messages
-    if len(messages) > 5:
-        s = "\n".join(messages[4:])
-        messages = messages[:4]
+    if len(messages) > messages_limit:
+        s = "\n".join(messages[messages_limit - 1:])
+        messages = messages[:messages_limit - 1]
         messages.append(s)
     # create messages
     for message in messages:
         # check if message is "" or " "
-        if message != " " and message:
-            formatted_messages.append(TextMessage(text=message))
-    logging.info(formatted_messages)
+        if not message or message == " ":
+            continue
+        formatted_messages.append(TextMessage(text=message))
+    logging.info(f"FORMATTED MESSAGES: {formatted_messages}")
     return formatted_messages
 
 
