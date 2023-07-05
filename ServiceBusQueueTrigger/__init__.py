@@ -13,9 +13,6 @@ CAROUSEL_ITEMS_LIMIT = 12
 KEY_VAULT_NAME = os.environ.get("KEY_VAULT_NAME")
 JOB_DETAILS_ENDPOINT = os.environ.get("JOB_DETAILS_ENDPOINT")
 JOB_DETAILS_WEBPAGE = os.environ.get("JOB_DETAILS_WEBPAGE")
-KEY_VAULT_NAME = "aira-dev-kv"
-JOB_DETAILS_ENDPOINT = "https://aira-dev-fn-line-chatbot.azurewebsites.net/api/jobs/search/"
-JOB_DETAILS_WEBPAGE = "https://airadevwebstg.z23.web.core.windows.net/"
 
 
 def main(msg: func.ServiceBusMessage):
