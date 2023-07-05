@@ -13,6 +13,9 @@ CAROUSEL_ITEMS_LIMIT = 12
 KEY_VAULT_NAME = os.environ.get("KEY_VAULT_NAME")
 JOB_DETAILS_ENDPOINT = os.environ.get("JOB_DETAILS_ENDPOINT")
 JOB_DETAILS_WEBPAGE = os.environ.get("JOB_DETAILS_WEBPAGE")
+KEY_VAULT_NAME = "aira-dev-kv"
+JOB_DETAILS_ENDPOINT = "https://aira-dev-fn-line-chatbot.azurewebsites.net/api/jobs/search/"
+JOB_DETAILS_WEBPAGE = "https://airadevwebstg.z23.web.core.windows.net/"
 
 
 def main(msg: func.ServiceBusMessage):
@@ -26,7 +29,7 @@ def main(msg: func.ServiceBusMessage):
     message = format_text(formatted_msg["text"], 4)
     # if searchId is present, add job listings message to the list
     if formatted_msg["type"] == "job_listings":
-        message.append(create_job_listings_v2(formatted_msg["job_listings"]))
+        message.append(create_job_listings_v3(formatted_msg["job_listings"]))
     try:
         line_bot_api.reply_message(formatted_msg["replyToken"], message)
     except LineBotApiError:
@@ -62,20 +65,26 @@ def format_data(data, search_id):
     # cycle through colors
     colors = ["#CAD7F2", "#E0A4F4", "#F5C947", "#F2644C", "#7ACBF1", "#F5F4F5"]
     color = 0
-    data = data["Data"]
+    data = data["data"]
     formatted_data = []
     for job in data[:CAROUSEL_ITEMS_LIMIT]:
-        # check if job_id exists to prevent passing in None
-        job_id = job.get("Details", {}).get("JobId")
+        # concat all job functions
+        job_functions = job.get("jobFunctions", [])
+        job_desc = ""
+        for function in job_functions:
+            job_desc += function + ". "
+        # make sure job id is not None
+        job_id = job.get("id", "#")
         if not job_id:
-            job_id = "No job id"
+            job_id = "#"
         new_job = {
-            "job_title": job.get("Details", {}).get("Position", "No job title"),
-            "company": job.get("Company", {}).get("Company", "No company"),
-            "location": job.get("Details", {}).get("Location", "No location"),
+            "job_title": job.get("details", {}).get("position", "No job title"),
+            "company": job.get("company", {}).get("company", "No company"),
+            "location": job.get("details", {}).get("location", "No location"),
             "color": colors[color],
-            "job_details_url": f"{JOB_DETAILS_WEBPAGE}{search_id}",  # for testing
-            "job_id": job_id
+            "job_details_url": f"{JOB_DETAILS_WEBPAGE}{search_id}/{job_id}",
+            "job_id": job_id,
+            "job_desc": job_desc
         }
         color += 1
         if color >= len(colors):
@@ -98,7 +107,7 @@ def format_text(text, messages_limit):
         if not message or message == " ":
             continue
         formatted_messages.append(TextMessage(text=message))
-    logging.info(f"FORMATTED MESSAGES: {formatted_messages}")
+    logging.info(f"FORMAT_TEXT CALLED: {formatted_messages}")
     return formatted_messages
 
 
