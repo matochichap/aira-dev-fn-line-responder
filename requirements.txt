@@ -6,3 +6,6 @@ azure-functions
 line-bot-sdk==2.4.2
 azure-keyvault-secrets
 azure-identity
+bardapi~=0.1.24
+requests~=2.28.2
+beautifulsoup4~=4.12.2

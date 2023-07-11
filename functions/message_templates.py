@@ -78,9 +78,8 @@ def create_menu(menu_items):
 
 
 def create_job_listings(job_listings):
-    # job_listings = data["job_listings"]
     """
-    job: job_title, company, location, salary_range, color, img_url, job_details_url, job_id
+    job: job_title, company, location, color, img_url, job_details_url, job_id
     """
     bubbles = []
     for job in job_listings:
@@ -113,7 +112,7 @@ def create_job_listings(job_listings):
                                 contents=[
                                     TextComponent(
                                         text=job["job_title"],
-                                        size="xl",
+                                        size="lg",
                                         color=job['color'],
                                         weight="bold"
                                     )
@@ -127,7 +126,7 @@ def create_job_listings(job_listings):
                                 padding_start="20px",
                                 contents=[
                                     TextComponent(
-                                        text=f"{job['company']} {job['location']} | {job['salary_range']}",
+                                        text=f"{job['company']} | {job['location']}",
                                         color="#ebebeb",
                                         size="sm",
                                         flex=0
@@ -810,6 +809,123 @@ def create_job_listings_v3(job_listings):
                 "footer": {
                     "backgroundColor": job['color']
                 }
+            }
+        }
+        bubbles.append(bubble)
+    carousel = CarouselContainer(contents=bubbles)
+    return FlexSendMessage(alt_text="Job Listings", contents=carousel)
+
+
+def create_job_listings_v4(job_listings):
+    """
+    :param job_listings: job: job_title, company, location, color, img_url, job_details_url
+    :return:
+    """
+    bubbles = []
+    for job in job_listings:
+        bubble = {
+            "type": "bubble",
+            "size": "kilo",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "image",
+                        "url": f"{job['img_url']}",
+                        "size": "full",
+                        "aspectMode": "cover",
+                        "aspectRatio": "1:1"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": f"{job['job_title']}",
+                                        "size": "lg",
+                                        "color": f"{job['color']}",
+                                        "weight": "bold"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": f"{job['company']} | {job['location']}",
+                                        "color": "#ebebeb",
+                                        "size": "sm",
+                                        "flex": 0
+                                    }
+                                ],
+                                "spacing": "lg",
+                                "margin": "sm"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "filler"
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "baseline",
+                                        "contents": [
+                                            {
+                                                "type": "filler"
+                                            },
+                                            {
+                                                "type": "text",
+                                                "text": "Explore",
+                                                "color": "#ffffff",
+                                                "flex": 0,
+                                                "offsetTop": "-2px",
+                                                "size": "sm"
+                                            },
+                                            {
+                                                "type": "filler"
+                                            }
+                                        ],
+                                        "spacing": "sm"
+                                    },
+                                    {
+                                        "type": "filler"
+                                    }
+                                ],
+                                "borderWidth": "1px",
+                                "cornerRadius": "4px",
+                                "spacing": "sm",
+                                "borderColor": "#ffffff",
+                                "margin": "xl",
+                                "height": "40px",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "action",
+                                    "uri": f"{job['job_details_url']}"
+                                }
+                            }
+                        ],
+                        "offsetStart": "0px",
+                        "offsetEnd": "0px",
+                        "backgroundColor": "#03303Acc",
+                        "paddingAll": "20px",
+                        "position": "relative",
+                        "offsetBottom": "134px",
+                        "paddingTop": "15px",
+                        "paddingBottom": "15px"
+                    }
+                ],
+                "paddingAll": "0px",
+                "height": "260px"
             }
         }
         bubbles.append(bubble)
