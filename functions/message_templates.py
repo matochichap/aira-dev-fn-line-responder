@@ -77,150 +77,6 @@ def create_menu(menu_items):
     return FlexSendMessage(alt_text="Menu", contents=carousel)
 
 
-def create_job_listings(job_listings):
-    """
-    job: job_title, company, location, color, img_url, job_details_url, job_id
-    """
-    bubbles = []
-    for job in job_listings:
-        bubble = BubbleContainer(
-            size="kilo",
-            body=BoxComponent(
-                layout="vertical",
-                padding_all="0px",
-                contents=[
-                    ImageComponent(
-                        url=job["img_url"],
-                        size="full",
-                        aspect_mode="cover",
-                        aspect_ratio="1:1",
-                        gravity="top"
-                    ),
-                    BoxComponent(
-                        layout="vertical",
-                        position="absolute",
-                        background_color="#03303Acc",
-                        offset_bottom="0px",
-                        offset_start="0px",
-                        offset_end="0px",
-                        padding_top="10px",
-                        padding_bottom="10px",
-                        contents=[
-                            BoxComponent(
-                                layout="vertical",
-                                padding_start="20px",
-                                contents=[
-                                    TextComponent(
-                                        text=job["job_title"],
-                                        size="lg",
-                                        color=job['color'],
-                                        weight="bold"
-                                    )
-                                ]
-                            ),
-                            BoxComponent(
-                                layout="baseline",
-                                spacing="lg",
-                                padding_top="1px",
-                                padding_bottom="8px",
-                                padding_start="20px",
-                                contents=[
-                                    TextComponent(
-                                        text=f"{job['company']} | {job['location']}",
-                                        color="#ebebeb",
-                                        size="sm",
-                                        flex=0
-                                    )
-                                ]
-                            ),
-                            BoxComponent(
-                                layout="horizontal",
-                                contents=[
-                                    BoxComponent(
-                                        layout="vertical",
-                                        flex=5,
-                                        spacing="sm",
-                                        margin="xxl",
-                                        height="40px",
-                                        border_width="1px",
-                                        border_color="#ffffff",
-                                        corner_radius="4px",
-                                        action=URIAction(
-                                            label="Explore",
-                                            uri=job["job_details_url"]
-                                        ),
-                                        contents=[
-                                            FillerComponent(),
-                                            BoxComponent(
-                                                layout="baseline",
-                                                spacing="sm",
-                                                contents=[
-                                                    FillerComponent(),
-                                                    TextComponent(
-                                                        text="Explore",
-                                                        flex=0,
-                                                        size="xs",
-                                                        color="#ffffff",
-                                                        weight="bold",
-                                                        offset_top="-2px",
-                                                        offset_start="-1px"
-                                                    ),
-                                                    FillerComponent()
-                                                ]
-                                            ),
-                                            FillerComponent()
-                                        ]
-                                    ),
-                                    BoxComponent(
-                                        layout="vertical",
-                                        flex=5,
-                                        spacing="sm",
-                                        margin="xl",
-                                        height="40px",
-                                        border_width="1px",
-                                        border_color="#ffffff",
-                                        corner_radius="4px",
-                                        action=PostbackAction(
-                                            label="chat",
-                                            data=job["job_id"]
-                                        ),
-                                        contents=[
-                                            FillerComponent(),
-                                            BoxComponent(
-                                                layout="baseline",
-                                                spacing="sm",
-                                                contents=[
-                                                    FillerComponent(),
-                                                    TextComponent(
-                                                        text="Chat",
-                                                        flex=0,
-                                                        size="xs",
-                                                        color="#ffffff",
-                                                        weight="bold",
-                                                        offset_top="-2px",
-                                                        offset_start="-1px"
-                                                    ),
-                                                    FillerComponent()
-                                                ]
-                                            ),
-                                            FillerComponent()
-                                        ]
-                                    ),
-                                    FillerComponent()
-                                ]
-                            )
-                        ]
-                    )
-                ]
-            )
-        )
-        bubbles.append(bubble)
-
-    carousel = CarouselContainer(contents=bubbles)
-
-    return FlexSendMessage(alt_text="Job Listings", contents=carousel)
-
-
 def create_job_applications(job_applications):
     # job_applications = data["job_listings"]
     bubbles = []
@@ -512,6 +368,150 @@ def create_job_applications(job_applications):
     carousel = CarouselContainer(contents=bubbles)
 
     return FlexSendMessage(alt_text="Job Applications", contents=carousel)
+
+
+def create_job_listings(job_listings):
+    """
+    job: job_title, company, location, color, img_url, job_details_url, job_id
+    """
+    bubbles = []
+    for job in job_listings:
+        bubble = BubbleContainer(
+            size="kilo",
+            body=BoxComponent(
+                layout="vertical",
+                padding_all="0px",
+                contents=[
+                    ImageComponent(
+                        url=job["img_url"],
+                        size="full",
+                        aspect_mode="cover",
+                        aspect_ratio="1:1",
+                        gravity="top"
+                    ),
+                    BoxComponent(
+                        layout="vertical",
+                        position="absolute",
+                        background_color="#03303Acc",
+                        offset_bottom="0px",
+                        offset_start="0px",
+                        offset_end="0px",
+                        padding_top="10px",
+                        padding_bottom="10px",
+                        contents=[
+                            BoxComponent(
+                                layout="vertical",
+                                padding_start="20px",
+                                contents=[
+                                    TextComponent(
+                                        text=job["job_title"],
+                                        size="lg",
+                                        color=job['color'],
+                                        weight="bold"
+                                    )
+                                ]
+                            ),
+                            BoxComponent(
+                                layout="baseline",
+                                spacing="lg",
+                                padding_top="1px",
+                                padding_bottom="8px",
+                                padding_start="20px",
+                                contents=[
+                                    TextComponent(
+                                        text=f"{job['company']} | {job['location']}",
+                                        color="#ebebeb",
+                                        size="sm",
+                                        flex=0
+                                    )
+                                ]
+                            ),
+                            BoxComponent(
+                                layout="horizontal",
+                                contents=[
+                                    BoxComponent(
+                                        layout="vertical",
+                                        flex=5,
+                                        spacing="sm",
+                                        margin="xxl",
+                                        height="40px",
+                                        border_width="1px",
+                                        border_color="#ffffff",
+                                        corner_radius="4px",
+                                        action=URIAction(
+                                            label="Explore",
+                                            uri=job["job_details_url"]
+                                        ),
+                                        contents=[
+                                            FillerComponent(),
+                                            BoxComponent(
+                                                layout="baseline",
+                                                spacing="sm",
+                                                contents=[
+                                                    FillerComponent(),
+                                                    TextComponent(
+                                                        text="Explore",
+                                                        flex=0,
+                                                        size="xs",
+                                                        color="#ffffff",
+                                                        weight="bold",
+                                                        offset_top="-2px",
+                                                        offset_start="-1px"
+                                                    ),
+                                                    FillerComponent()
+                                                ]
+                                            ),
+                                            FillerComponent()
+                                        ]
+                                    ),
+                                    BoxComponent(
+                                        layout="vertical",
+                                        flex=5,
+                                        spacing="sm",
+                                        margin="xl",
+                                        height="40px",
+                                        border_width="1px",
+                                        border_color="#ffffff",
+                                        corner_radius="4px",
+                                        action=PostbackAction(
+                                            label="chat",
+                                            data=job["job_id"]
+                                        ),
+                                        contents=[
+                                            FillerComponent(),
+                                            BoxComponent(
+                                                layout="baseline",
+                                                spacing="sm",
+                                                contents=[
+                                                    FillerComponent(),
+                                                    TextComponent(
+                                                        text="Chat",
+                                                        flex=0,
+                                                        size="xs",
+                                                        color="#ffffff",
+                                                        weight="bold",
+                                                        offset_top="-2px",
+                                                        offset_start="-1px"
+                                                    ),
+                                                    FillerComponent()
+                                                ]
+                                            ),
+                                            FillerComponent()
+                                        ]
+                                    ),
+                                    FillerComponent()
+                                ]
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+        bubbles.append(bubble)
+
+    carousel = CarouselContainer(contents=bubbles)
+
+    return FlexSendMessage(alt_text="Job Listings", contents=carousel)
 
 
 def create_job_listings_v2(job_listings):
@@ -931,3 +931,155 @@ def create_job_listings_v4(job_listings):
         bubbles.append(bubble)
     carousel = CarouselContainer(contents=bubbles)
     return FlexSendMessage(alt_text="Job Listings", contents=carousel)
+
+
+# have not tested yet
+def create_resume_feedback(feedback):
+    """
+    :param feedback: overall_score, topics: [{name, score, parent_score}, ...], resume_feedback_url
+    :return:
+    """
+    topics = []
+    colors = ["#C8A5CD", "#F5C947", "#EE6344", "#7ACBF1"]
+    color = 0
+    for topic in feedback['topics']:
+        new_topic = [
+            {
+                "type": "text",
+                "text": f"{topic['name']}: {topic['score']}",
+                "color": "#FEFBF6",
+                "align": "start",
+                "size": "sm",
+                "gravity": "center",
+                "margin": "none"
+            },
+            {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [],
+                        "width": f"{topic['percent_score']}",
+                        "backgroundColor": colors[color],
+                        "height": "10px"
+                    }
+                ],
+                "backgroundColor": "#F5F4F5",
+                "height": "10px",
+                "margin": "sm",
+                "cornerRadius": "xl"
+            }
+        ]
+        topics += new_topic
+        color += 1
+        if color >= len(colors):
+            color = 0
+    bubble = {
+        "type": "bubble",
+        "size": "mega",
+        "header": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+                {
+                    "type": "text",
+                    "text": "Resume Feedback",
+                    "color": "#FEFBF6",
+                    "align": "start",
+                    "size": "lg",
+                    "gravity": "center",
+                    "weight": "bold"
+                },
+                {
+                    "type": "text",
+                    "text": f"Overall score: {feedback['overall_score']}",
+                    "size": "md",
+                    "color": "#FEFBF6",
+                    "weight": "bold"
+                }
+            ],
+            "paddingTop": "19px",
+            "paddingAll": "12px",
+            "paddingBottom": "0px",
+            "paddingStart": "20px"
+        },
+        "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+                {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": topics,
+                    "margin": "xl"
+                }
+            ],
+            "paddingTop": "0px"
+        },
+        "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+                {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                            "type": "filler"
+                        },
+                        {
+                            "type": "box",
+                            "layout": "baseline",
+                            "contents": [
+                                {
+                                    "type": "filler"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "Find Out More",
+                                    "flex": 0,
+                                    "offsetTop": "-2px",
+                                    "size": "sm",
+                                    "color": "#FEFBF6"
+                                },
+                                {
+                                    "type": "filler"
+                                }
+                            ],
+                            "spacing": "sm"
+                        },
+                        {
+                            "type": "filler"
+                        }
+                    ],
+                    "spacing": "sm",
+                    "margin": "none",
+                    "height": "35px",
+                    "borderWidth": "1.5px",
+                    "borderColor": "#FEFBF6",
+                    "cornerRadius": "4px",
+                    "action": {
+                        "type": "uri",
+                        "label": "action",
+                        "uri": f"{feedback['resume_feedback_url']}"
+                    }
+                }
+            ],
+            "paddingAll": "20px",
+            "paddingTop": "10px"
+        },
+        "styles": {
+            "header": {
+                "backgroundColor": "#000000"
+            },
+            "body": {
+                "backgroundColor": "#000000"
+            },
+            "footer": {
+                "backgroundColor": "#000000"
+            }
+        }
+    }
+    return FlexSendMessage(alt_text="Resume Feedback", contents=bubble)

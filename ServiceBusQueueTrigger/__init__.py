@@ -13,15 +13,20 @@ from functions.brandfetch_webscraper import *
 CAROUSEL_ITEMS_LIMIT = 10
 KEY_VAULT_NAME = os.environ.get("KEY_VAULT_NAME")
 JOB_DETAILS_ENDPOINT = os.environ.get("JOB_DETAILS_ENDPOINT")
-JOB_DETAILS_WEBPAGE = os.environ.get("JOB_DETAILS_WEBPAGE")
+WEBPAGE_URL = os.environ.get("JOB_DETAILS_WEBPAGE")
 KEY_VAULT_NAME = "aira-dev-kv"
 JOB_DETAILS_ENDPOINT = "https://aira-dev-fn-line-chatbot.azurewebsites.net/api/jobs/search/"
-JOB_DETAILS_WEBPAGE = "https://airadevwebstg.z23.web.core.windows.net/"
+WEBPAGE_URL = "https://airadevwebstg.z23.web.core.windows.net/"
 
 PLACEHOLDER_IMG_URL = "https://www.nasco.co.th/wp-content/uploads/2022/06/placeholder.png"
 
 
 def main(msg: func.ServiceBusMessage):
+    """
+    Responds to ServiceBusMessage with the appropriate type of message to LINE API
+    :param msg: ServiceBusMessage
+    :return: void
+    """
     global message
     formatted_msg = format_message(msg)
     logging.info(f"FORMATTED MESSAGE: {formatted_msg}")  # print formatted message
@@ -41,8 +46,12 @@ def main(msg: func.ServiceBusMessage):
     return
 
 
-# convert from fn-chatbot into json
-def format_message(msg):
+def format_message(msg: func.ServiceBusMessage):
+    """
+    Convert ServiceBusMessage to json, controls type of message to send
+    :param msg: ServiceBusMessage
+    :return: json with type of message to send
+    """
     msg_str = msg.get_body().decode('utf-8')
     msg_json = json.loads(msg_str)
     formatted_json = {
@@ -54,19 +63,25 @@ def format_message(msg):
     }
     # if searchId not "" use endpoint to get job details
     if msg_json["searchId"]:
-        formatted_json["type"] = "job_listings"
         response = requests.get(f"{JOB_DETAILS_ENDPOINT}{msg_json['searchId']}")
         if response.status_code == 200:
+            formatted_json["type"] = "job_listings"
             data = response.json()
             # add new job_listings field to formatted json
-            formatted_json["job_listings"] = format_data(data, msg_json["searchId"])
-    # else return decoded json
+            formatted_json["job_listings"] = format_job_listings_data(data, msg_json["searchId"])
+        # handle case where unable to fetch data
+        else:
+            formatted_json["text"] = "Sorry, I am currently unable to search for jobs."
     return formatted_json
 
 
-# format data from endpoint to pass into message templates
-# return type: json
-def format_data(data, search_id):
+def format_job_listings_data(data: dict, search_id: str):
+    """
+    Format data from endpoint to pass into message templates
+    :param data: raw json data from job search endpoint
+    :param search_id: searchId to format into url
+    :return: json with required fields for message templates
+    """
     # cycle through colors
     colors = ["#CAD7F2", "#E0A4F4", "#F5C947", "#F2644C", "#7ACBF1", "#F5F4F5"]
     color = 0
@@ -95,13 +110,9 @@ def format_data(data, search_id):
             "company": job.get("company", {}).get("company", "No company"),
             "location": job.get("details", {}).get("location", "No location"),
             "color": colors[color],
-            "job_details_url": f"{JOB_DETAILS_WEBPAGE}{search_id}/{job_id}",
+            "job_details_url": f"{WEBPAGE_URL}job-details/{search_id}/{job_id}",
             "job_id": job_id,
             "job_desc": job_desc,
-            # "job_summary": enriched_data.get("description", "No description"),
-            # "industry": enriched_data.get("industry"),
-            # "contact_details": enriched_data.get("contact_details"),
-            # "company_size": enriched_data.get("company_size"),
             "img_url": logo_url,
             "social_links": social_links
         }
@@ -112,8 +123,13 @@ def format_data(data, search_id):
     return formatted_data
 
 
-# return type: TextMessage list
-def format_text(text, messages_limit):
+def format_text(text: str, messages_limit: int):
+    """
+    Converts text string to list of TextMessages
+    :param text: text string
+    :param messages_limit: max length of list of TextMessages
+    :return: TextMessage list
+    """
     messages = text.split("\\n")  # set which character to split by
     formatted_messages = []
     # append back of messages together if exceed 5 messages
@@ -131,7 +147,12 @@ def format_text(text, messages_limit):
     return formatted_messages
 
 
-def get_channel_access_token(channel_id):
+def get_channel_access_token(channel_id: str):
+    """
+    Get channel access token from key vault.
+    :param channel_id: channel id
+    :return: channel access token
+    """
     KVUri = f"https://{KEY_VAULT_NAME}.vault.azure.net"
     credential = DefaultAzureCredential()
     client = SecretClient(vault_url=KVUri, credential=credential)
