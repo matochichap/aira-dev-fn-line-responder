@@ -1,11 +1,38 @@
 from linebot.models import *
 
 
-def create_menu(menu_items):
+# TODO: need to test
+def create_menu() -> FlexSendMessage:
     # menu_items = data["menu"]
     """
     item: title, subtitle, color, img_url
     """
+    menu_items = [
+        {
+          "title": "Resume Creation",
+          "subtitle": "Build a resume ready to send off to your dream company.",
+          "color": "#9BABB8",
+          "img_url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip1.jpg"
+        },
+        {
+          "title": "Find Your Match",
+          "subtitle": "Match your profile to a job that will fit into all your skills and personality!",
+          "color": "#EEE3CB",
+          "img_url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip2.jpg"
+        },
+        {
+          "title": "Detect & Enhance",
+          "subtitle": "Enhance your resume by our quick analysis for general improvement or a specific job.",
+          "color": "#D7C0AE",
+          "img_url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip3.jpg"
+        },
+        {
+          "title": "Interview Prep",
+          "subtitle": "Find a job, select(or copy & paste in your job description), and get asked specific prep questions!",
+          "color": "#967E76",
+          "img_url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip4.jpg"
+        }
+    ]
     bubbles = []
     for item in menu_items:
         bubble = BubbleContainer(
@@ -77,7 +104,7 @@ def create_menu(menu_items):
     return FlexSendMessage(alt_text="Menu", contents=carousel)
 
 
-def create_job_applications(job_applications):
+def create_job_applications(job_applications: dict) -> FlexSendMessage:
     # job_applications = data["job_listings"]
     bubbles = []
     blue = "#6486E3"
@@ -816,10 +843,10 @@ def create_job_listings_v3(job_listings):
     return FlexSendMessage(alt_text="Job Listings", contents=carousel)
 
 
-def create_job_listings_v4(job_listings):
+def create_job_listings_v4(job_listings: dict) -> FlexSendMessage:
     """
     :param job_listings: job: job_title, company, location, color, img_url, job_details_url
-    :return:
+    :return: FlexSendMessage
     """
     bubbles = []
     for job in job_listings:
@@ -933,11 +960,153 @@ def create_job_listings_v4(job_listings):
     return FlexSendMessage(alt_text="Job Listings", contents=carousel)
 
 
-# have not tested yet
-def create_resume_feedback(feedback):
+# TODO: need to test
+def create_job_listings_v5(job_listings: dict) -> FlexSendMessage:
+    """
+    :param job_listings: job: job_title. company, location, color, img_url, job_details_url, relevance, date_posted
+    :return: FlexSendMessage
+    """
+    bubbles = []
+    for job in job_listings:
+        bubble = {
+            "type": "bubble",
+            "size": "kilo",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "image",
+                        "url": f"{job['img_url']}",
+                        "size": "full",
+                        "aspectMode": "cover",
+                        "aspectRatio": "1:1"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": f"{job['job_title']}",
+                                        "size": "lg",
+                                        "color": f"{job['color']}",
+                                        "weight": "bold"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": f"{job['company']} | {job['location']}",
+                                        "color": "#ebebeb",
+                                        "size": "sm",
+                                        "flex": 0
+                                    }
+                                ],
+                                "spacing": "lg",
+                                "margin": "sm"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": f"Match: {job['relevance']}%",
+                                        "color": "#ebebeb",
+                                        "size": "sm",
+                                        "flex": 0
+                                    },
+                                    {
+                                        "type": "filler"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"Posted: {job['date_posted']}",
+                                        "color": "#ebebeb",
+                                        "size": "sm",
+                                        "flex": 0
+                                    }
+                                ],
+                                "margin": "sm"
+                            },
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "filler"
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "baseline",
+                                        "contents": [
+                                            {
+                                                "type": "filler"
+                                            },
+                                            {
+                                                "type": "text",
+                                                "text": "Explore",
+                                                "color": "#ffffff",
+                                                "flex": 0,
+                                                "offsetTop": "-2px",
+                                                "size": "sm"
+                                            },
+                                            {
+                                                "type": "filler"
+                                            }
+                                        ],
+                                        "spacing": "sm"
+                                    },
+                                    {
+                                        "type": "filler"
+                                    }
+                                ],
+                                "borderWidth": "1px",
+                                "cornerRadius": "4px",
+                                "spacing": "sm",
+                                "borderColor": "#ffffff",
+                                "height": "40px",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "action",
+                                    "uri": f"{job['job_details_url']}"
+                                },
+                                "margin": "md"
+                            }
+                        ],
+                        "offsetStart": "0px",
+                        "offsetEnd": "0px",
+                        "backgroundColor": "#03303Acc",
+                        "paddingAll": "20px",
+                        "position": "absolute",
+                        "paddingTop": "15px",
+                        "paddingBottom": "15px",
+                        "offsetBottom": "0px"
+                    }
+                ],
+                "paddingAll": "0px",
+                "height": "260px"
+            }
+        }
+        bubbles.append(bubble)
+    carousel = CarouselContainer(contents=bubbles)
+    return FlexSendMessage(alt_text="Job Listings", contents=carousel)
+
+
+# TODO: need to test
+def create_resume_feedback(feedback: dict) -> FlexSendMessage:
     """
     :param feedback: overall_score, topics: [{name, score, parent_score}, ...], resume_feedback_url
-    :return:
+    :return: FlexSendMessage
     """
     topics = []
     colors = ["#C8A5CD", "#F5C947", "#EE6344", "#7ACBF1"]

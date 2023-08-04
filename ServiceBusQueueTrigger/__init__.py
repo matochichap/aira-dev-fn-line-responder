@@ -18,11 +18,11 @@ WEBPAGE_URL = os.environ.get("JOB_DETAILS_WEBPAGE")
 PLACEHOLDER_IMG_URL = "https://www.nasco.co.th/wp-content/uploads/2022/06/placeholder.png"
 
 
-def main(msg: func.ServiceBusMessage):
+def main(msg: func.ServiceBusMessage) -> None:
     """
     Responds to ServiceBusMessage with the appropriate type of message to LINE API
     :param msg: ServiceBusMessage
-    :return: void
+    :return: None
     """
     global message
     formatted_msg = format_message(msg)
@@ -35,6 +35,9 @@ def main(msg: func.ServiceBusMessage):
     # if searchId is present, add job listings message to the list
     if formatted_msg["type"] == "job_listings":
         message.append(create_job_listings_v4(formatted_msg["job_listings"]))
+    # TODO: need to test
+    if formatted_msg["type"] == "welcome":
+        message.append((create_menu()))
     try:
         line_bot_api.reply_message(formatted_msg["replyToken"], message)
     except LineBotApiError:
@@ -43,7 +46,7 @@ def main(msg: func.ServiceBusMessage):
     return
 
 
-def format_message(msg: func.ServiceBusMessage):
+def format_message(msg: func.ServiceBusMessage) -> dict:
     """
     Convert ServiceBusMessage to json, controls type of message to send
     :param msg: ServiceBusMessage
@@ -60,6 +63,7 @@ def format_message(msg: func.ServiceBusMessage):
     }
     # if searchId not "" use endpoint to get job details
     if msg_json["searchId"]:
+        logging.info(f"searchId: {msg_json['searchId']}\nuserId: {msg_json['userId']}")  # testing
         response = requests.get(f"{JOB_DETAILS_ENDPOINT}{msg_json['searchId']}")
         if response.status_code == 200:
             formatted_json["type"] = "job_listings"
@@ -72,7 +76,7 @@ def format_message(msg: func.ServiceBusMessage):
     return formatted_json
 
 
-def format_job_listings_data(data: dict, search_id: str):
+def format_job_listings_data(data: dict, search_id: str) -> dict:
     """
     Format data from endpoint to pass into message templates
     :param data: raw json data from job search endpoint
@@ -87,6 +91,8 @@ def format_job_listings_data(data: dict, search_id: str):
     for job in data[:CAROUSEL_ITEMS_LIMIT]:
         # get enriched data
         company_url = job.get("company", {}).get("companyUrl", "")
+        # TODO: still directly scraping from brandfetch website, remove when endpoint is updated with enriched data
+        #  because this function is slow
         logo_url, social_links = scrape_brandfetch(company_url)
         if not logo_url:
             logo_url = PLACEHOLDER_IMG_URL
@@ -120,7 +126,7 @@ def format_job_listings_data(data: dict, search_id: str):
     return formatted_data
 
 
-def format_text(text: str, messages_limit: int):
+def format_text(text: str, messages_limit: int) -> list[TextMessage]:
     """
     Converts text string to list of TextMessages
     :param text: text string
@@ -144,7 +150,7 @@ def format_text(text: str, messages_limit: int):
     return formatted_messages
 
 
-def get_channel_access_token(channel_id: str):
+def get_channel_access_token(channel_id: str) -> str:
     """
     Get channel access token from key vault.
     :param channel_id: channel id
