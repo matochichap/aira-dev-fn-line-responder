@@ -14,6 +14,9 @@ CAROUSEL_ITEMS_LIMIT = 10
 KEY_VAULT_NAME = os.environ.get("KEY_VAULT_NAME")
 JOB_DETAILS_ENDPOINT = os.environ.get("JOB_DETAILS_ENDPOINT")
 WEBPAGE_URL = os.environ.get("JOB_DETAILS_WEBPAGE")
+KEY_VAULT_NAME = "aira-dev-kv"
+JOB_DETAILS_ENDPOINT = "https://aira-dev-fn-line-chatbot.azurewebsites.net/api/jobs/search/"
+WEBPAGE_URL = "https://airadevwebstg.z23.web.core.windows.net/"
 
 PLACEHOLDER_IMG_URL = "https://www.nasco.co.th/wp-content/uploads/2022/06/placeholder.png"
 
